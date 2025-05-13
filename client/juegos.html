@@ -38,7 +38,7 @@
                     `;
                 });
             } else {
-                if (response.error) {
+                if (response.status==401) {
                     location.href="index.html";
                 }
                 alert("Error al cargar los juegos.");
