@@ -38,6 +38,9 @@
                     `;
                 });
             } else {
+                if (response.error) {
+                    location.href="index.html";
+                }
                 alert("Error al cargar los juegos.");
             }
         }
