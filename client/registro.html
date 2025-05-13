@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - Reviews de Videojuegos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script>
+        async function register() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            if (!username || !password) {
+                alert("Por favor, completa todos los campos.");
+                return;
+            }
+
+            const response = await fetch(`${window.location.origin}/api/users/register`, {
+
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Usuario registrado exitosamente. Ahora puedes iniciar sesión.");
+                window.location.href = "index.html";
+            } else {
+                alert(result.error || "Error al registrar usuario.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Crear una Cuenta</h1>
+            <div class="columns is-centered">
+                <div class="column is-one-third">
+                    <form>
+                        <div class="field">
+                            <label class="label">Usuario</label>
+                            <div class="control">
+                                <input class="input" type="text" id="username" placeholder="Elige un nombre de usuario">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Contraseña</label>
+                            <div class="control">
+                                <input class="input" type="password" id="password" placeholder="Elige una contraseña">
+                            </div>
+                        </div>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="button" class="button is-link" onclick="register()">Registrarse</button>
+                            </div>
+                            <div class="control">
+                                <a href="index.html" class="button is-light">Volver al Login</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

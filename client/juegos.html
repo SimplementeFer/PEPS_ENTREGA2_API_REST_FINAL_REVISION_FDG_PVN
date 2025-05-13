@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos - Reviews de Videojuegos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script>
+        // Función para obtener el token CSRF desde las cookies
+        function getCsrfToken() {
+            const csrfToken = document.cookie.split(';').find(cookie => cookie.trim().startsWith('csrf_token='));
+            return csrfToken ? csrfToken.split('=')[1] : null;
+        }
+
+        // Función para obtener la lista de juegos
+        async function fetchGames() {
+            const csrfToken = getCsrfToken(); // Obtener el CSRF token
+            const response = await fetch('/api/games', {
+                method: 'GET',
+                headers: { 'X-CSRFToken': csrfToken } // Enviar el CSRF token en el encabezado
+            });
+            const games = await response.json();
+            const tbody = document.getElementById("games-list");
+            tbody.innerHTML = "";
+
+            if (response.ok) {
+                games.forEach(game => {
+                    tbody.innerHTML += `
+                        <tr>
+                            <td>${game.name}</td>
+                            <td>${game.description || "Sin descripción"}</td>
+                            <td>${game.price}€</td>
+                            <td>
+                                <button class="button is-info" onclick="editGame(${game.id})">Editar</button>
+                                <button class="button is-danger" onclick="deleteGame(${game.id})">Eliminar</button>
+                            </td>
+                        </tr>
+                    `;
+                });
+            } else {
+                alert("Error al cargar los juegos.");
+            }
+        }
+
+        // Función para redirigir al formulario de edición
+        function editGame(id) {
+            window.location.href = `editar_juego.html?id=${id}`;
+        }
+
+        // Función para eliminar un juego
+        async function deleteGame(id) {
+            const csrfToken = getCsrfToken(); // Obtener el CSRF token
+            if (!confirm("¿Seguro que deseas eliminar este juego?")) return;
+
+            const response = await fetch(`/api/games/${id}`, {
+                method: 'DELETE',
+                headers: { 'X-CSRFToken': csrfToken } // Enviar el CSRF token en el encabezado
+            });
+
+            if (response.ok) {
+                alert("Juego eliminado exitosamente.");
+                fetchGames();
+            } else {
+                alert("Error al eliminar el juego.");
+            }
+        }
+
+        // Inicializar la página cargando la lista de juegos
+        window.onload = fetchGames;
+    </script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Lista de Juegos</h1>
+            <div class="field">
+                <button class="button is-primary" onclick="window.location.href='agregar_juego.html'">Agregar Juego</button>
+                <button class="button is-light" onclick="window.location.href='index.html'">Cerrar Sesión</button>
+            </div>
+            <table class="table is-fullwidth is-striped">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Descripción</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="games-list">
+                    <!-- Lista de juegos cargada dinámicamente -->
+                </tbody>
+            </table>
+        </div>
+    </section>
+</body>
+</html>

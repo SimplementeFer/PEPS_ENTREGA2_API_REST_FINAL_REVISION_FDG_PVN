@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editar Juego - Reviews de Videojuegos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script>
+        // Obtener el ID del juego desde los parámetros de la URL
+        const params = new URLSearchParams(window.location.search);
+        const gameId = params.get('id');
+
+        // Función para obtener los detalles del juego
+        async function fetchGameDetails() {
+            const response = await fetch(`/api/games/${gameId}`);
+            if (response.ok) {
+                const game = await response.json();
+                document.getElementById("name").value = game.name;
+                document.getElementById("description").value = game.description || "";
+                document.getElementById("price").value = game.price;
+            } else {
+                alert("Error al cargar los detalles del juego.");
+                window.location.href = "juegos.html";  // Redirige si no se puede cargar el juego
+            }
+        }
+
+        // Función para actualizar el juego
+        async function updateGame() {
+            const name = document.getElementById("name").value;
+            const description = document.getElementById("description").value;
+            const price = document.getElementById("price").value;
+
+            if (!name || !price) {
+                alert("Por favor, completa todos los campos obligatorios.");
+                return;
+            }
+
+            const response = await fetch(`/api/games/${gameId}`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ name, description, price })  // Datos a actualizar
+            });
+
+            if (response.ok) {
+                alert("Juego actualizado exitosamente.");
+                window.location.href = "juegos.html";  // Redirige a la lista de juegos
+            } else {
+                alert("Error al actualizar el juego.");
+            }
+        }
+
+        // Cargar los detalles del juego cuando la página cargue
+        window.onload = fetchGameDetails;
+    </script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Editar Juego</h1>
+            <div class="columns is-centered">
+                <div class="column is-half">
+                    <!-- Formulario para editar un juego -->
+                    <form>
+                        <div class="field">
+                            <label class="label">Nombre *</label>
+                            <div class="control">
+                                <input class="input" type="text" id="name" placeholder="Nombre del juego" required>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Descripción</label>
+                            <div class="control">
+                                <textarea class="textarea" id="description" placeholder="Descripción del juego"></textarea>
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Precio (€) *</label>
+                            <div class="control">
+                                <input class="input" type="number" id="price" placeholder="Precio en euros" required>
+                            </div>
+                        </div>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="button" class="button is-link" onclick="updateGame()">Guardar</button>
+                            </div>
+                            <div class="control">
+                                <a href="juegos.html" class="button is-light">Volver</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

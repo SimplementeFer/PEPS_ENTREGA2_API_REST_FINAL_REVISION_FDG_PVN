@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Reviews de Videojuegos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script>
+        async function login() {
+            const username = document.getElementById("username").value;
+            const password = document.getElementById("password").value;
+
+            const response = await fetch(`${window.location.origin}/api/users/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },    
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            if (response.ok) {
+                alert("Inicio de sesión exitoso");
+                window.location.href = "juegos.html";
+            } else {
+                alert(result.error || "Error en el inicio de sesión");
+            }
+        }
+    </script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Bienvenido a Reviews de Videojuegos</h1>
+            <div class="columns is-centered">
+                <div class="column is-one-third">
+                    <form>
+                        <div class="field">
+                            <label class="label">Usuario</label>
+                            <div class="control">
+                                <input class="input" type="text" id="username" placeholder="Tu usuario">
+                            </div>
+                        </div>
+                        <div class="field">
+                            <label class="label">Contraseña</label>
+                            <div class="control">
+                                <input class="input" type="password" id="password" placeholder="Tu contraseña">
+                            </div>
+                        </div>
+                        <div class="field is-grouped">
+                            <div class="control">
+                                <button type="button" class="button is-link" onclick="login()">Iniciar Sesión</button>
+                            </div>
+                            <div class="control">
+                                <a href="registro.html" class="button is-light">Registrarse</a>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

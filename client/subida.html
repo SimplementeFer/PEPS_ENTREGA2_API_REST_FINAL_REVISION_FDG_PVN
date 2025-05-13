@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Subir y Ver Archivos - Reviews de Videojuegos</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.9.2/css/bulma.min.css">
+    <script>
+        // Función para subir un archivo
+        async function uploadFile() {
+            const fileInput = document.getElementById("file");
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert("Por favor, selecciona un archivo.");
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append("file", file);
+
+            const response = await fetch('/api/files/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (response.ok) {
+                alert("Archivo subido exitosamente.");
+                fileInput.value = "";
+            } else {
+                alert("Error al subir el archivo.");
+            }
+        }
+
+        // Función para ver el contenido de un archivo
+        async function viewFile() {
+            const filename = document.getElementById("filename").value;
+
+            if (!filename) {
+                alert("Por favor, ingresa el nombre del archivo.");
+                return;
+            }
+
+            const response = await fetch(`/api/files/view/${filename}`, { method: 'GET' });
+            const result = await response.json();
+
+            if (response.ok) {
+                document.getElementById("file-content").textContent = result.content;
+            } else {
+                alert(result.error || "Error al cargar el archivo.");
+            }
+        }
+    </script>
+</head>
+<body>
+    <section class="section">
+        <div class="container">
+            <h1 class="title has-text-centered">Subir y Ver Archivos</h1>
+            <div class="columns">
+                <div class="column">
+                    <h2 class="subtitle">Subir un Archivo</h2>
+                    <div class="field">
+                        <label class="label">Seleccionar Archivo</label>
+                        <div class="control">
+                            <input class="input" type="file" id="file">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-link" onclick="uploadFile()">Subir Archivo</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="column">
+                    <h2 class="subtitle">Ver Contenido de un Archivo</h2>
+                    <div class="field">
+                        <label class="label">Nombre del Archivo</label>
+                        <div class="control">
+                            <input class="input" type="text" id="filename" placeholder="Ejemplo: archivo.txt">
+                        </div>
+                    </div>
+                    <div class="field">
+                        <div class="control">
+                            <button class="button is-link" onclick="viewFile()">Ver Archivo</button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <label class="label">Contenido</label>
+                        <div class="control">
+                            <textarea class="textarea" id="file-content" readonly placeholder="Aquí aparecerá el contenido del archivo..."></textarea>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="field">
+                <a href="juegos.html" class="button is-light">Volver a Juegos</a>
+            </div>
+        </div>
+    </section>
+</body>
+</html>

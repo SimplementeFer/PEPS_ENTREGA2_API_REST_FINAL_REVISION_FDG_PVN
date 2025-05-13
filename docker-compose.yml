@@ -1,0 +1,75 @@
+version: "3.9"
+
+services:
+  api:
+    container_name: proyecto_python-apib5
+    build:
+      context: ./api
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+    env_file: .env    
+    environment:
+      - DB_HOST=db
+      - DB_PORT=3306
+      - DB_NAME=reviews_db
+      - DB_USER=${DB_USER}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - SECRET_KEY=supersecreto
+      - WTF_CSRF_SECRET_KEY=otro_secreto
+      - HOST=0.0.0.0
+      - PORT=5000
+    volumes:
+      - ./api:/app
+    depends_on:
+      - db
+    networks:
+      - my_network
+
+  db:
+    container_name: proyecto_python-dbb5
+    image: mariadb:10.5
+    ports:
+      - "7105:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: reviews_db
+    volumes:
+      - mariadb_datab5:/var/lib/mysql
+      - ./api/models/schemas.sql:/docker-entrypoint-initdb.d/schemas.sql
+    networks:
+      - my_network
+
+  web:
+    container_name: proyecto_python-webb5
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    ports:
+      - "6105:80"
+    volumes:
+      - ./client:/usr/local/apache2/htdocs
+    depends_on:
+      - api
+    networks:
+      - my_network
+
+  phpmyadmin:
+    container_name: proyecto_python-phpmyadminb5
+    image: phpmyadmin
+    restart: always
+    environment:
+      - PMA_HOST=db
+    ports:
+      - "9093:80"
+    depends_on:
+      - db
+    networks:
+      - my_network
+
+volumes:
+  mariadb_datab5:
+
+networks:
+  my_network:
+    driver: bridge
