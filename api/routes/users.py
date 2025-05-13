@@ -68,7 +68,6 @@ def login_user():
 
             # Si el usuario existe y las contraseñas coinciden, la autenticación es exitosa
             if user and check_password_hash(user['password'], password):
-                app.logger.info("Acceso usuario %s correcto",username)
                 create_session(username, user['perfil'])
                 return jsonify({"message": "Inicio de sesión exitoso"}), 200
 
